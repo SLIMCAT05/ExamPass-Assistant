@@ -5,7 +5,7 @@ description: 基于课程资料生成仿真期末整卷或单章测试 + 答案�
 
 # ExamPass 出题（子 skill）
 
-> 由 `/exampass final <目录> [--ref <真题>] [--chapter <章名>]` 调用。
+> 由 `/exampass final <目录> [--ref <真题>] [--chapter <章名>]` 调用；也兼容直接调用 `/exampass-final`（两者等效，走同一套流程）。
 > 复用多 Agent 内核（骨架 → 蓝图 → 题目 Agent → 做题 Agent 两遍验证 → 一轮修订 → 渲染）。
 
 ---
@@ -86,7 +86,7 @@ basic（送分）约 25% / medium（中档）约 45% / hard（拉分）约 30%�
 
 ## 流程
 
-1. **骨架**：`.epa_work/knowledge_skeleton.json` 已存在则复用，否则用 `agents/skeleton-agent.md` 现产。
+1. **骨架**：`.epa_work/knowledge_skeleton.json` 已存在则复用，否则用 `agents/skeleton-agent.md` 现产。若目录下已有生成的章节知识清单 HTML（`chapters/**/*.html`），一并递归读取作为补充材料。
 2. **风格参考**：`--ref` → 真题分析；否则联网（可关）。写 `exam_reference.md`。
 3. **考试蓝图**：智能选题型 + 难度梯度，分值合计 **100**（单章模式按时长折算，如 40 分钟 ≈ 50 分），覆盖目标范围、枢纽概念权重更高。写 `.epa_work/exam_blueprint.json`，含 `reasoning` 字段说明题型取舍依据。
 4. **命题**：用 `agents/item-agent.md` Part 4，按蓝图全局命题。

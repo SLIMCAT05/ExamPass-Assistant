@@ -11,14 +11,17 @@ from utils import is_supported
 
 
 def _parse_chapter_prefix(filename: str) -> Tuple[int, str]:
-    """Extract chapter number from a filename like '3 分治-1.pdf' -> (3, '3 分治').
+    """Extract chapter number from a filename.
+
+    Handles both the bare form '3 分治-1.pdf' -> (3, '3 分治') and the Chinese
+    textbook form '第3章 分治.pdf' -> (3, '第3章 分治').
 
     Returns (0, '') when no prefix is found.
     """
-    m = re.match(r'^(\d+)\s+(.+)', filename)
+    m = re.match(r'^(第\s*)?(\d+)\s*(章)?\s*(.+)', filename)
     if m:
-        num = int(m.group(1))
-        base = m.group(2)
+        num = int(m.group(2))
+        base = m.group(4)
         # Strip extension
         base = re.sub(r'\.[^.]+$', '', base)
         # Strip trailing variant suffix: -1, -2, _new, _final etc.
@@ -26,7 +29,9 @@ def _parse_chapter_prefix(filename: str) -> Tuple[int, str]:
         base = re.sub(r'[_-]new$', '', base)
         base = re.sub(r'[_-]final$', '', base)
         base = base.strip()
-        return num, f"{m.group(1)} {base}"
+        if m.group(3):
+            return num, f"第{num}章 {base}"
+        return num, f"{num} {base}"
     return 0, ''
 
 

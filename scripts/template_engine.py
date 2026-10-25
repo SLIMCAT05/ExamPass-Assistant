@@ -27,14 +27,14 @@ _PAGE_TEMPLATE = _read('page_template.html')
 _MATHJAX_CONFIG = '''<script>
 MathJax = {
   tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
   }
 };
 </script>'''
 
 _MATHJAX_SCRIPT = (
-    '<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>'
+    '<script defer src="https://registry.npmmirror.com/mathjax/3.2.2/files/es5/tex-chtml-full.js"></script>'
 )
 
 
@@ -368,6 +368,10 @@ def _auto_tag_headings(body_html, kcs, slides):
 
     def repl(m):
         level, attrs, inner = m.group(1), m.group(2), m.group(3)
+        # Skip headings that already carry a hand-written marker — injecting a
+        # second one renders a duplicate page chip next to the author's own.
+        if 'data-slides' in inner:
+            return m.group(0)
         head_norm = _norm_label(inner)
         if not head_norm:
             return m.group(0)
